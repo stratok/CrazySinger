@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
     private UIController _uIController;
     private MicrofonInputManager _microfonInput;
 
-    private ISongController SubsController;
+    private GameLoopController SubsController;
 
     private bool _isRun     = false;
     private bool _isPause   = false;
@@ -58,9 +58,6 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        // Setup
-        SubsController.Setup();
-
         _startGridPosition = _gridTransform.position;
 
         _uIController.HideGameMenu();

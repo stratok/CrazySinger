@@ -1,6 +1,7 @@
 /[Ll]ibrary/
 /[Ll]ogs/
 /[Oo]bj/
+/[Tt]emp/
 
 .vscode/
 .vs/

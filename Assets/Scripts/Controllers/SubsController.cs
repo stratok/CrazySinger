@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SubsController : MonoBehaviour, ISongController
+public class SubsController : GameLoopController
 {
     private SongData _songData;
     private Transform _subsPanel;
@@ -16,9 +16,12 @@ public class SubsController : MonoBehaviour, ISongController
     private int _stepCount;
     private int _currentStep = 0;
     private float _startTime;
+    private float _currentTime;
     private Coroutine _activeLoop;
 
-    public void Setup()
+    protected override int Frequency => throw new NotImplementedException();
+
+    protected override void Setup()
     {
         _songData   = FindObjectOfType<SongDataContainer>().SongData;
         _subsPanel  = FindObjectOfType<SubsPanelView>()?.transform;
@@ -29,54 +32,25 @@ public class SubsController : MonoBehaviour, ISongController
         _subsPanel.DOMoveY(_panelShift, 0);
     }
 
-    public void Play()
+    public override void Play()
     {
-        _startTime  = Time.time;
-        _activeLoop = StartCoroutine(StartLoop());
+        _startTime = Time.time;
+
+        base.Play();
     }
 
-    public void Stop()
+    public override void Stop()
     {
-        if (_activeLoop != null)
-            StopCoroutine(_activeLoop);
+        base.Stop();
 
         _currentStep = 0;
     }
 
-    public void Pause()
+    public override void Replay()
     {
-        if (_activeLoop != null)
-            StopCoroutine(_activeLoop);
-    }
-
-    public void Resume()
-    {
-        _activeLoop = StartCoroutine(StartLoop());
-    }
-
-    public void Replay()
-    {
-        if (_activeLoop != null)
-            StopCoroutine(_activeLoop);
+        base.Replay();
 
         _currentStep = 0;
-        _activeLoop  = StartCoroutine(StartLoop());
-    }
-
-    private IEnumerator StartLoop()
-    {
-        while (_currentStep < _stepCount)
-        {
-            float currentTime = (float)Math.Round(Time.time - _startTime, 1);
-
-            if (currentTime == _songData.SongSettings[_currentStep].time)
-            {
-                _currentStep++;
-                ShowNextString();
-            }
-
-            yield return null;
-        }
     }
 
     private void ShowNextString()
@@ -87,15 +61,17 @@ public class SubsController : MonoBehaviour, ISongController
             _subsPanel.DOMoveY(0, _shiftDuration);
         });
     }
-    
-}
 
-public interface ISongController
-{
-    void Setup();
-    void Play();
-    void Stop();
-    void Pause();
-    void Resume();
-    void Replay();
+    protected override void GameLoop()
+    {
+        if (_currentStep >= _stepCount) return;
+        
+        _currentTime = (float)Math.Round(Time.time - _startTime, 1);
+
+        if (_currentTime == _songData.SongSettings[_currentStep].time)
+        {
+            _currentStep++;
+            ShowNextString();
+        }
+    }
 }
