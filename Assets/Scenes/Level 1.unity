@@ -313,6 +313,7 @@ CompositeCollider2D:
       - {x: 110, y: -4}
       - {x: 115, y: -4}
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!50 &89760417
 Rigidbody2D:
   serializedVersion: 4
@@ -349,6 +350,7 @@ TilemapCollider2D:
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!483693784 &89760419
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -4940,7 +4942,7 @@ GameObject:
   - component: {fileID: 1313055680}
   m_Layer: 8
   m_Name: Ground Bottom
-  m_TagString: BottomGround
+  m_TagString: GroundBottom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4974,6 +4976,7 @@ TilemapCollider2D:
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!66 &1313055681
 CompositeCollider2D:
   m_ObjectHideFlags: 0
@@ -5021,6 +5024,7 @@ CompositeCollider2D:
       - {x: -11, y: -7}
       - {x: 162, y: -7}
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!50 &1313055682
 Rigidbody2D:
   serializedVersion: 4
@@ -10762,7 +10766,7 @@ GameObject:
   - component: {fileID: 1599063905}
   m_Layer: 8
   m_Name: Ground Top
-  m_TagString: TopGround
+  m_TagString: GroundTop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10796,6 +10800,7 @@ TilemapCollider2D:
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!66 &1599063906
 CompositeCollider2D:
   m_ObjectHideFlags: 0
@@ -10843,6 +10848,7 @@ CompositeCollider2D:
       - {x: -11, y: 4}
       - {x: 162, y: 4}
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!50 &1599063907
 Rigidbody2D:
   serializedVersion: 4
@@ -15810,7 +15816,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 49da6b92191db6f48b7509302a547c3b,
         type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114812379922850886, guid: c7d4a385f0977614d9baf6adb04febac, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c7d4a385f0977614d9baf6adb04febac, type: 3}
 --- !u!1 &1865135840
 GameObject:

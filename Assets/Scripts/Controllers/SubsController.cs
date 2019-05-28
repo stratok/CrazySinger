@@ -1,29 +1,24 @@
 ﻿using DG.Tweening;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SubsController : GameLoopController
 {
-    private SongData _songData;
-    private Transform _subsPanel;
-    private Text _subsText;
+    private SongData    _songData;
+    private Transform   _subsPanel;
+    private Text        _subsText;
 
-    private float _panelShift = -120f;
-    private float _shiftDuration = 0.2f;
-
-    private int _stepCount;
-    private int _currentStep = 0;
-    private float _startTime;
-    private float _currentTime;
-    private Coroutine _activeLoop;
-
-    protected override int Frequency => throw new NotImplementedException();
+    private float   _panelShift     = -120f;
+    private float   _shiftDuration  = 0.2f;
+    private float   _startTime;
+    private float   _currentTime;
+    private int     _stepCount;
+    private int     _currentStep    = 0;
 
     protected override void Setup()
     {
-        _songData   = FindObjectOfType<SongDataContainer>().SongData;
+        _songData   = FindObjectOfType<SongDataContainer>()?.SongData;
         _subsPanel  = FindObjectOfType<SubsPanelView>()?.transform;
         _subsText   = FindObjectOfType<SubsTextView>()?.GetComponent<Text>();
 

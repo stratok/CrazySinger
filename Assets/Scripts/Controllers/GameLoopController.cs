@@ -3,7 +3,6 @@ using UnityEngine;
 
 public abstract class GameLoopController : MonoBehaviour
 {
-    protected abstract int Frequency { get; }
     protected bool isLoop;
     protected bool isSetup;
 
@@ -11,15 +10,13 @@ public abstract class GameLoopController : MonoBehaviour
     protected abstract void Setup();
 
     public virtual void Replay() => StartCoroutine(ILoop());
-    public virtual void Play() => StartCoroutine(ILoop());
-    public virtual void Stop() => isLoop = false;
-    public virtual void Pause() => isLoop = false;
+    public virtual void Play()   => StartCoroutine(ILoop());
+    public virtual void Stop()   => isLoop = false;
+    public virtual void Pause()  => isLoop = false;
     public virtual void Resume() => StartCoroutine(ILoop());
 
     private IEnumerator ILoop()
     {
-        var delay = Frequency / 1000;
-
         if (!isSetup)
         {
             Setup();
@@ -30,7 +27,7 @@ public abstract class GameLoopController : MonoBehaviour
         while (isLoop)
         {
             GameLoop();
-            yield return new WaitForSeconds(delay);
+            yield return null;
         }
     }
 }
