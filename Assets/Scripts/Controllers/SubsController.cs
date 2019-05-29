@@ -16,6 +16,8 @@ public class SubsController : GameLoopController
     private int     _stepCount;
     private int     _currentStep    = 0;
 
+    protected override bool IsTimeLoop => false;
+
     protected override void Setup()
     {
         _songData   = FindObjectOfType<SongDataContainer>()?.SongData;
@@ -24,7 +26,6 @@ public class SubsController : GameLoopController
 
         _stepCount = _songData.SongSettings.Length;
         _subsText.text = string.Empty;
-        _subsPanel.DOMoveY(_panelShift, 0);
     }
 
     public override void Play()

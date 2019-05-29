@@ -6,6 +6,9 @@ public abstract class GameLoopController : MonoBehaviour
     protected bool isLoop;
     protected bool isSetup;
 
+    protected abstract bool IsTimeLoop { get; }
+    protected int Delay = 1;
+
     protected abstract void GameLoop();
     protected abstract void Setup();
 
@@ -27,7 +30,11 @@ public abstract class GameLoopController : MonoBehaviour
         while (isLoop)
         {
             GameLoop();
-            yield return null;
+
+            if (IsTimeLoop)
+                yield return new WaitForSeconds(Delay);
+            else
+                yield return null;
         }
     }
 }

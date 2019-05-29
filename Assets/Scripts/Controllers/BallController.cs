@@ -12,6 +12,8 @@ public class BallController : GameLoopController
 
     private BallCollisionType _ballCollisionType = BallCollisionType.Bottom;
 
+    protected override bool IsTimeLoop => false;
+
     public void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == Constants.TagObstacles)

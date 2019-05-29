@@ -48,10 +48,10 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
-        _audioSource = GetComponent<AudioSource>();
-        _microfonInput = FindObjectOfType<MicrofonInputManager>();
-        _uIController = FindObjectOfType<UIController>();
+        _animator       = GetComponent<Animator>();
+        _audioSource    = GetComponent<AudioSource>();
+        _microfonInput  = FindObjectOfType<MicrofonInputManager>();
+        _uIController   = FindObjectOfType<UIController>();
 
         ScoreController = gameObject.AddComponent<ScoreController>();
         SubsController  = gameObject.AddComponent<SubsController>();
@@ -112,7 +112,7 @@ public class GameController : MonoBehaviour
         _microfonInput.StopListening();
         _isPause = false;
         _uIController.HideGameMenu();
-        _score = 0;
+
         StopAllCoroutines();
         StartGame();
     }
