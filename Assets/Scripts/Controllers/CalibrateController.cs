@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CalibrateController : MonoBehaviour
 {
-    private MicrofonInputManager _microfonInput;
+    private InputController _microfonInput;
     private BallController[] _ballControllers;
     
     [SerializeField] private Slider _slider;

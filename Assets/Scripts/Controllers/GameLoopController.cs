@@ -3,8 +3,8 @@ using UnityEngine;
 
 public abstract class GameLoopController : MonoBehaviour
 {
-    protected bool isLoop;
     protected bool isSetup;
+    private Coroutine _gameLoop;
 
     protected abstract bool IsTimeLoop { get; }
     protected int Delay = 1;
@@ -12,22 +12,37 @@ public abstract class GameLoopController : MonoBehaviour
     protected abstract void GameLoop();
     protected abstract void Setup();
 
-    public virtual void Replay() => StartCoroutine(ILoop());
-    public virtual void Play()   => StartCoroutine(ILoop());
-    public virtual void Stop()   => isLoop = false;
-    public virtual void Pause()  => isLoop = false;
-    public virtual void Resume() => StartCoroutine(ILoop());
+    public virtual void Replay()
+    {
+        if(_gameLoop != null)
+            StopCoroutine(_gameLoop);
 
-    private IEnumerator ILoop()
+        _gameLoop = StartCoroutine(ILoop());
+    }
+    public virtual void Play()
     {
         if (!isSetup)
         {
             Setup();
             isSetup = true;
         }
-        isLoop = true;
+        _gameLoop = StartCoroutine(ILoop());
+    }
+    public virtual void Stop()
+    {
+        if (_gameLoop != null)
+            StopCoroutine(_gameLoop);
+    }
+    public virtual void Pause()
+    {
+        if (_gameLoop != null)
+            StopCoroutine(_gameLoop);
+    }
+    public virtual void Resume() => _gameLoop = StartCoroutine(ILoop());
 
-        while (isLoop)
+    private IEnumerator ILoop()
+    {
+        while (true)
         {
             GameLoop();
 

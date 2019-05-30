@@ -21,7 +21,7 @@
 
     public override void Replay()
     {
-        Score = 0;
         base.Replay();
+        Score = 0;
     }
 }

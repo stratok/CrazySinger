@@ -3,6 +3,7 @@
 [CreateAssetMenu(fileName = "SongData", menuName = "CustomObjects/SongData")]
 public class SongData : ScriptableObject
 {
+    public AudioClip Song;
     public SongSettings[] SongSettings;
 }
 

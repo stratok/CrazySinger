@@ -1,19 +1,17 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class MicrofonInputManager : MonoBehaviour
+public class InputController : MonoBehaviour
 {
     private string _device;
     private AudioClip _clipRecord;
     private int _sampleWindow = 128;
-    private bool _isInitialized;
 
     public static float MicValue { get; private set; }
 
     public void StartListening()
     {
         InitMic();
-        _isInitialized = true;
     }
 
     public void StopListening()

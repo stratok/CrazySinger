@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
         get
         {
             if (_instance == null)
-                _instance = (GameController)FindObjectOfType<GameController>();
+                _instance = FindObjectOfType<GameController>();
 
             return _instance;
         }
@@ -23,10 +23,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioClip _soundStart;
     [SerializeField] private AudioClip _soundLoss;
     [SerializeField] private AudioClip _soundWin;
-    [SerializeField] private AudioClip _song;
-    
     [SerializeField] private Transform _gridTransform;
-
 
     [Tooltip("Скорость движения полотна")]
     [SerializeField] private float _gridSpeed;
@@ -34,9 +31,10 @@ public class GameController : MonoBehaviour
     // Components
     private Animator _animator;
     private AudioSource _audioSource;
-    private BallController _ballController;
-    private UIController _uIController;
-    private MicrofonInputManager _microfonInput;
+    
+    private UIController       UIController;
+    private InputController    InputController;
+    private SongController     SongController;
 
     private GameLoopController SubsController;
     private GameLoopController BallController;
@@ -50,11 +48,13 @@ public class GameController : MonoBehaviour
     {
         _animator       = GetComponent<Animator>();
         _audioSource    = GetComponent<AudioSource>();
-        _microfonInput  = FindObjectOfType<MicrofonInputManager>();
-        _uIController   = FindObjectOfType<UIController>();
+
+        UIController    = FindObjectOfType<UIController>();
+        InputController = FindObjectOfType<InputController>();
+        SubsController  = FindObjectOfType<SubsController>();
+        SongController  = FindObjectOfType<SongController>();
 
         ScoreController = gameObject.AddComponent<ScoreController>();
-        SubsController  = gameObject.AddComponent<SubsController>();
         BallController  = gameObject.AddComponent<BallController>();
     }
 
@@ -62,15 +62,13 @@ public class GameController : MonoBehaviour
     {
         _startGridPosition = _gridTransform.position;
 
-        _uIController.HideGameMenu();
+        UIController.HideGameMenu();
         
         StartGame();
     }
 
     private void Update()
     {
-        if (!_isRun) return;
-
         _gridTransform.position = _gridTransform.position + Vector3.left * Time.deltaTime * _gridSpeed;
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -81,7 +79,7 @@ public class GameController : MonoBehaviour
     {
         _gridTransform.position = _startGridPosition;
 
-        _uIController.HideGameMenu();
+        UIController.HideGameMenu();
 
         Time.timeScale = 1;
 
@@ -94,10 +92,10 @@ public class GameController : MonoBehaviour
         yield return null;
         var duration = _animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(duration);
-        _isRun = true;
-        _microfonInput.StartListening();
-        PlaySound(_song);
 
+        InputController.StartListening();
+
+        SongController.Play();
         ScoreController.Play();
         BallController.Play();
         SubsController.Play();
@@ -105,36 +103,33 @@ public class GameController : MonoBehaviour
 
     public void RestartGame()
     {
+        ScoreController.Replay();
         SubsController.Replay();
         BallController.Replay();
 
         _isRun = false;
-        _microfonInput.StopListening();
+        InputController.StopListening();
         _isPause = false;
-        _uIController.HideGameMenu();
+        UIController.HideGameMenu();
 
-        StopAllCoroutines();
         StartGame();
     }
 
     public void StopGame()
     {
-        if (!_isRun) return;
-
         ScoreController.Stop();
         SubsController.Stop();
         BallController.Stop();
 
-        _microfonInput.StopListening();
+        InputController.StopListening();
         _isRun = false;
-        _uIController.ShowGameMenu(GameMenuState.Loss);
+        UIController.ShowGameMenu(GameMenuState.Loss);
         PlaySound(_soundLoss);
-        StopAllCoroutines();
     }
 
     public void WinGame()
     {
-        _microfonInput.StopListening();
+        InputController.StopListening();
 
         ScoreController.Stop();
         SubsController.Stop();
@@ -142,13 +137,13 @@ public class GameController : MonoBehaviour
 
         _isRun = false;
         PlaySound(_soundWin);
-        StopAllCoroutines();
+        StopGame();
         Invoke("ShowMenu", 2);
     }
 
     private void ShowMenu()
     {
-        _uIController.ShowGameMenu(GameMenuState.Win);
+        UIController.ShowGameMenu(GameMenuState.Win);
     }
 
     private void PlayCountdownSound()
@@ -179,7 +174,7 @@ public class GameController : MonoBehaviour
         {
             _isPause = false;
             Time.timeScale = 1;
-            _uIController.HideGameMenu();
+            UIController.HideGameMenu();
             _audioSource.Play();
 
             ScoreController.Resume();
@@ -190,7 +185,7 @@ public class GameController : MonoBehaviour
         {
             _isPause = true;
             Time.timeScale = 0;
-            _uIController.ShowGameMenu(GameMenuState.Pause);
+            UIController.ShowGameMenu(GameMenuState.Pause);
             _audioSource.Pause();
 
             ScoreController.Pause();

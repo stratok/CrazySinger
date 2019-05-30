@@ -44,9 +44,9 @@ public class BallController : GameLoopController
         else if (_ballCollisionType == BallCollisionType.Top)
             _ballTransform.Rotate(Vector3.forward, _rotateSpeed * Time.deltaTime);
     }
-    public void Move()
+    private void Move()
     {
-        _ballRigidbody.AddForce(Vector3.up * MicrofonInputManager.MicValue * _ballSens);
+        _ballRigidbody.AddForce(Vector3.up * InputController.MicValue * _ballSens);
     }
 
     protected override void Setup()
