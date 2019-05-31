@@ -1,48 +1,37 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class InputController : MonoBehaviour
+public class InputController : GameLoopController
 {
+    // Settings
     private string _device;
-    private AudioClip _clipRecord;
     private int _sampleWindow = 128;
+    private AudioClip _clipRecord;
 
     public static float MicValue { get; private set; }
+    public static bool IsMenuKeyDown => Input.GetButtonDown("Esc");
 
-    public void StartListening()
-    {
-        InitMic();
-    }
+    protected override bool IsTimeLoop => false;
 
-    public void StopListening()
-    {
-        StopMicrophone();
-    }
-
-    void InitMic()
+    protected override void Setup()
     {
         if (_device == null)
             _device = Microphone.devices[0];
-        _clipRecord = Microphone.Start(_device, true, 300, 44100);
-        StartCoroutine(ChangeValue());
     }
 
-    private IEnumerator ChangeValue()
+    public override void Play()
     {
-        while (true)
-        {
-            MicValue = LevelMax();
-            yield return null;
-        }
+        _clipRecord = Microphone.Start(_device, true, 300, 44100);
+
+        base.Play();
     }
 
-    void StopMicrophone()
+    private void StopMicrophone()
     {
         Microphone.End(_device);
-        StopAllCoroutines();
     }
     
-    float LevelMax()
+    private float LevelMax()
     {
         float levelMax = 0;
         float[] waveData = new float[_sampleWindow];
@@ -63,4 +52,10 @@ public class InputController : MonoBehaviour
         var micPower = Mathf.Clamp(temp / 100, 0, 1);
         return micPower;
     }
+
+    protected override void GameLoop()
+    {
+        MicValue = LevelMax();
+    }
+
 }
