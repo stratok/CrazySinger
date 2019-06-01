@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: OnTebyaCeluet
   m_EditorClassIdentifier: 
   Song: {fileID: 8300000, guid: 5d94798d6afae9f439bf263099dbc593, type: 3}
+  FinalTime: 74
   SongSettings:
   - time: 13.8
     text: "\u0412\u0435\u0447\u0435\u0440\u043E\u043C \u0442\u0435\u043F\u043B\u044B\u043C

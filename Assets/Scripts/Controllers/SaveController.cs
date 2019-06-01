@@ -7,7 +7,7 @@ public static class SaveController
         return PlayerPrefs.GetInt(name, value);
     }
 
-    public static void SaveIntFromPrefs(string name, int value)
+    public static void SaveIntToPrefs(string name, int value)
     {
         PlayerPrefs.SetInt(name, value);
         PlayerPrefs.Save();

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class GameLoopController : MonoBehaviour
 {
-    protected bool isSetup;
+    private bool isSetup;
     private Coroutine _gameLoop;
 
     protected abstract bool IsTimeLoop { get; }
@@ -16,8 +16,6 @@ public abstract class GameLoopController : MonoBehaviour
     {
         if(_gameLoop != null)
             StopCoroutine(_gameLoop);
-
-        _gameLoop = StartCoroutine(ILoop());
     }
     public virtual void Play()
     {
@@ -33,12 +31,8 @@ public abstract class GameLoopController : MonoBehaviour
         if (_gameLoop != null)
             StopCoroutine(_gameLoop);
     }
-    public virtual void Pause()
-    {
-        if (_gameLoop != null)
-            StopCoroutine(_gameLoop);
-    }
-    public virtual void Resume() => _gameLoop = StartCoroutine(ILoop());
+    public virtual void Pause() { }
+    public virtual void Resume() { }
 
     private IEnumerator ILoop()
     {

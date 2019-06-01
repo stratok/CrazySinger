@@ -3,65 +3,37 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(AudioSource))]
 public class GameController : MonoBehaviour
 {
-    private static GameController _instance;
-    public static GameController Instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = FindObjectOfType<GameController>();
-
-            return _instance;
-        }
-    }
-
-    [Header("Sounds")]
-    [SerializeField] private AudioClip _soundCountdown;
-    [SerializeField] private AudioClip _soundStart;
-    [SerializeField] private AudioClip _soundLoss;
-    [SerializeField] private AudioClip _soundWin;
-    [SerializeField] private Transform _gridTransform;
-
-    [Tooltip("Скорость движения полотна")]
-    [SerializeField] private float _gridSpeed;
-
-    // Components
     private Animator _animator;
-    private AudioSource _audioSource;
     
-    private UIController       UIController;
-    private InputController    InputController;
-    private SongController     SongController;
+    private UIController UIController;
+    private SoundController SoundController;
 
-    private GameLoopController SubsController;
-    private GameLoopController BallController;
-    private GameLoopController ScoreController;
-
-    private bool _isRun     = false;
     private bool _isPause   = false;
-    private Vector3 _startGridPosition;
+    private int  _countdownHesh = Animator.StringToHash("Countdown");
+
+    private GameLoopController[] _controllers;
 
     private void Awake()
     {
         _animator       = GetComponent<Animator>();
-        _audioSource    = GetComponent<AudioSource>();
 
-        UIController    = FindObjectOfType<UIController>();
-        InputController = FindObjectOfType<InputController>();
-        SubsController  = FindObjectOfType<SubsController>();
-        SongController  = FindObjectOfType<SongController>();
+        UIController    = GetComponent<UIController>();
+        SoundController = GetComponent<SoundController>();
 
-        ScoreController = gameObject.AddComponent<ScoreController>();
-        BallController  = gameObject.AddComponent<BallController>();
+        _controllers = new GameLoopController[]
+        {
+            gameObject.AddComponent<ScoreController>(),
+            gameObject.AddComponent<SubsController>(),
+            gameObject.AddComponent<GridController>(),
+            gameObject.AddComponent<InputController>(),
+            FindObjectOfType<BallController>(),
+        };
     }
 
     private void Start()
     {
-        _startGridPosition = _gridTransform.position;
-
         UIController.HideGameMenu();
         
         StartGame();
@@ -69,75 +41,50 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        _gridTransform.position = _gridTransform.position + Vector3.left * Time.deltaTime * _gridSpeed;
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Pause();
+        if (InputController.IsMenuKeyDown)
+            PauseGame();
     }
 
     public void StartGame()
     {
-        _gridTransform.position = _startGridPosition;
-
-        UIController.HideGameMenu();
-
         Time.timeScale = 1;
-
         StartCoroutine(IStartGameCoroutine());
     }
 
     private IEnumerator IStartGameCoroutine()
     {
-        _animator.Play("Countdown");
+        _animator.Play(_countdownHesh);
         yield return null;
         var duration = _animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(duration);
 
-        InputController.StartListening();
-
-        SongController.Play();
-        ScoreController.Play();
-        BallController.Play();
-        SubsController.Play();
+        SoundController.Play(SoundsList.Song);
+        Play();
     }
 
     public void RestartGame()
     {
-        ScoreController.Replay();
-        SubsController.Replay();
-        BallController.Replay();
-
-        _isRun = false;
-        InputController.StopListening();
+        Replay();
+        
         _isPause = false;
         UIController.HideGameMenu();
 
         StartGame();
     }
 
-    public void StopGame()
+    public void LoseGame()
     {
-        ScoreController.Stop();
-        SubsController.Stop();
-        BallController.Stop();
-
-        InputController.StopListening();
-        _isRun = false;
+        Stop();
+        
         UIController.ShowGameMenu(GameMenuState.Loss);
-        PlaySound(_soundLoss);
+        SoundController.Play(SoundsList.Lose);
     }
 
     public void WinGame()
     {
-        InputController.StopListening();
+        Stop();
 
-        ScoreController.Stop();
-        SubsController.Stop();
-        BallController.Stop();
-
-        _isRun = false;
-        PlaySound(_soundWin);
-        StopGame();
+        SoundController.Play(SoundsList.Win);
         Invoke("ShowMenu", 2);
     }
 
@@ -146,21 +93,8 @@ public class GameController : MonoBehaviour
         UIController.ShowGameMenu(GameMenuState.Win);
     }
 
-    private void PlayCountdownSound()
-    {
-        PlaySound(_soundCountdown);
-    }
-
-    private void PlayStartSound()
-    {
-        PlaySound(_soundStart);
-    }
-
-    private void PlaySound(AudioClip clip)
-    {
-        _audioSource.clip = clip;
-        _audioSource.Play();
-    }
+    private void PlayCountdownSound() => SoundController.Play(SoundsList.Countdown);
+    private void PlayStartSound() => SoundController.Play(SoundsList.Start);
 
     public void Exit()
     {
@@ -168,29 +102,49 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void Pause()
+    public void PauseGame()
     {
         if (_isPause)
         {
-            _isPause = false;
             Time.timeScale = 1;
             UIController.HideGameMenu();
-            _audioSource.Play();
-
-            ScoreController.Resume();
-            SubsController.Resume();
-            BallController.Resume();
+            SoundController.Resume();
+            Resume();
         }
         else
         {
-            _isPause = true;
             Time.timeScale = 0;
             UIController.ShowGameMenu(GameMenuState.Pause);
-            _audioSource.Pause();
-
-            ScoreController.Pause();
-            SubsController.Pause();
-            BallController.Pause();
+            SoundController.Pause();
+            Pause();
         }
+
+        _isPause = !_isPause;
+    }
+
+    private void Play()
+    {
+        for (int i = 0; i < _controllers.Length; i++)
+            _controllers[i].Play();
+    }
+    private void Stop()
+    {
+        for (int i = 0; i < _controllers.Length; i++)
+            _controllers[i].Stop();
+    }
+    private void Replay()
+    {
+        for (int i = 0; i < _controllers.Length; i++)
+            _controllers[i].Replay();
+    }
+    private void Pause()
+    {
+        for (int i = 0; i < _controllers.Length; i++)
+            _controllers[i].Pause();
+    }
+    private void Resume()
+    {
+        for (int i = 0; i < _controllers.Length; i++)
+            _controllers[i].Resume();
     }
 }

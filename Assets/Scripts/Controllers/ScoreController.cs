@@ -23,5 +23,6 @@
     {
         base.Replay();
         Score = 0;
+        _uIController.UpdateScore(Score);
     }
 }

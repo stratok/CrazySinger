@@ -58,6 +58,7 @@ public class UIController : MonoBehaviour
 
         _gameMenu.SetActive(true);
     }
+
     public void UpdateScore(int score)
     {
         _currentScore = score;

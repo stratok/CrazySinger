@@ -1,14 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum BallCollisionType { None, Bottom, Top }
 
 public class BallController : GameLoopController
 {
-    [SerializeField]
-    private float       _rotateSpeed    = 100;
+    private float       _rotateSpeed = 100;
     private int         _ballSens;
     private Rigidbody2D _ballRigidbody;
-    private Transform   _ballTransform;
+    private GameController _gameController;
 
     private BallCollisionType _ballCollisionType = BallCollisionType.Bottom;
 
@@ -17,47 +17,50 @@ public class BallController : GameLoopController
     public void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == Constants.TagObstacles)
-            Loss();
-        if (collision.gameObject.tag == Constants.TagFinish)
+            Lose();
+        else if (collision.gameObject.tag == Constants.TagFinish)
             Win();
-        if (collision.gameObject.tag == Constants.TagGroundTop)
+        else if(collision.gameObject.tag == Constants.TagGroundTop)
             _ballCollisionType = BallCollisionType.Top;
-        if (collision.gameObject.tag == Constants.TagGroundBottom)
+        else if(collision.gameObject.tag == Constants.TagGroundBottom)
             _ballCollisionType = BallCollisionType.Bottom;
     }
-    public void OnCollisionExit2D(Collision2D collision)
-    {
-        _ballCollisionType = BallCollisionType.None;
-    }
-    public void Loss()
-    {
-        GameController.Instance.StopGame();
-    }
-    public void Win()
-    {
-        GameController.Instance.WinGame();
-    }
+    public void OnCollisionExit2D(Collision2D collision) => _ballCollisionType = BallCollisionType.None;
+
+    private void Lose() => _gameController.LoseGame();
+
+    private void Win() => _gameController.WinGame();
+
     private void Rotate()
     {
         if (_ballCollisionType == BallCollisionType.Bottom)
-            _ballTransform.Rotate(Vector3.forward, -_rotateSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.forward, -_rotateSpeed * Time.deltaTime);
         else if (_ballCollisionType == BallCollisionType.Top)
-            _ballTransform.Rotate(Vector3.forward, _rotateSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.forward, _rotateSpeed * Time.deltaTime);
     }
     private void Move()
     {
         _ballRigidbody.AddForce(Vector3.up * InputController.MicValue * _ballSens);
     }
+    public void ChangeSensitivity(int value) => _ballSens = value;
+    public void ResetCollisions() => _ballCollisionType = BallCollisionType.None;
 
     protected override void Setup()
     {
-        _ballTransform  = FindObjectOfType<BallView>().transform;
-        _ballRigidbody  = _ballTransform.GetComponent<Rigidbody2D>();
+        _gameController = FindObjectOfType<GameController>();
+        _ballRigidbody  = GetComponent<Rigidbody2D>();
         _ballSens       = SaveController.LoadIntFromPrefs(Constants.Sensitivity, 500);
     }
     protected override void GameLoop()
     {
         Move();
         Rotate();
+    }
+
+    public override void Play()
+    {
+        base.Play();
+
+        _ballCollisionType = BallCollisionType.Bottom;
     }
 }

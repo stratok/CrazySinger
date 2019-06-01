@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InputController : GameLoopController
 {
@@ -9,7 +8,7 @@ public class InputController : GameLoopController
     private AudioClip _clipRecord;
 
     public static float MicValue { get; private set; }
-    public static bool IsMenuKeyDown => Input.GetButtonDown("Esc");
+    public static bool  IsMenuKeyDown => Input.GetKeyDown(KeyCode.Escape);
 
     protected override bool IsTimeLoop => false;
 
@@ -26,9 +25,10 @@ public class InputController : GameLoopController
         base.Play();
     }
 
-    private void StopMicrophone()
+    public override void Stop()
     {
         Microphone.End(_device);
+        base.Stop();
     }
     
     private float LevelMax()
@@ -58,4 +58,6 @@ public class InputController : GameLoopController
         MicValue = LevelMax();
     }
 
+    public override void Pause() => Microphone.End(_device);
+    public override void Resume() =>_clipRecord = Microphone.Start(_device, true, 300, 44100);
 }

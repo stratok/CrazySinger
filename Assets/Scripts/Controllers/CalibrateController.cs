@@ -10,29 +10,34 @@ public class CalibrateController : MonoBehaviour
     [SerializeField] private Slider _slider;
     [SerializeField] private Text   _sliderValue;
 
-    //private void Start()
-    //{
-    //    _microfonInput  = FindObjectOfType<MicrofonInputManager>();
-    //    _ballControllers = FindObjectsOfType<BallController>();
-    //    SaveController.LoadIntFromPrefs();
+    private void Start()
+    {
+        _microfonInput   = GetComponent<InputController>();
+        _ballControllers = FindObjectsOfType<BallController>();
 
-    //    _slider.value = SaveController.BallSensitivity;
-    //    _microfonInput.StartListening();
-    //    for (int i = 0; i < _ballControllers.Length; i++)
-    //    {
-    //        _ballControllers[i].StartCalibrate();
-    //    }
-    //}
+        var sensitivity = SaveController.LoadIntFromPrefs(Constants.Sensitivity, 500);
+        _slider.value = sensitivity;
 
-    //public void ChangeSensitivity(float value)
-    //{
-    //    SaveController.BallSensitivity = value;
-    //    _sliderValue.text = SaveController.BallSensitivity.ToString();
-    //}
-    
-    //public void SaveSettings()
-    //{
-    //    SaveController.SaveFloatFromPrefs();
-    //    SceneManager.LoadScene(0);
-    //}
+        _microfonInput.Play();
+
+        for (int i = 0; i < _ballControllers.Length; i++)
+        {
+            _ballControllers[i].Play();
+            _ballControllers[i].ResetCollisions();
+        }
+    }
+
+    public void ChangeSensitivity(float value)
+    {
+        _sliderValue.text = _slider.value.ToString();
+
+        for (int i = 0; i < _ballControllers.Length; i++)
+            _ballControllers[i].ChangeSensitivity((int)_slider.value);
+    }
+
+    public void SaveSettings()
+    {
+        SaveController.SaveIntToPrefs(Constants.Sensitivity, (int)_slider.value);
+        SceneManager.LoadScene(0);
+    }
 }

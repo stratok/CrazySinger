@@ -4,6 +4,7 @@
 public class SongData : ScriptableObject
 {
     public AudioClip Song;
+    public float FinalTime;
     public SongSettings[] SongSettings;
 }
 
