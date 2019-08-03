@@ -1,3 +1,6 @@
 ﻿using UnityEngine;
 
-public class View : MonoBehaviour { }
+namespace CrazySinger
+{
+	public class View : MonoBehaviour { }
+}

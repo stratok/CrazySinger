@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-
-public class SongDataContainer : MonoBehaviour
+﻿namespace CrazySinger
 {
-    public SongData SongData;
+	public class SongDataContainer : View
+	{
+		public SongData SongData;
+	}
 }

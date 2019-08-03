@@ -2,42 +2,47 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class CalibrateController : MonoBehaviour
+namespace CrazySinger
 {
-    private InputController _microfonInput;
-    private BallController[] _ballControllers;
-    
-    [SerializeField] private Slider _slider;
-    [SerializeField] private Text   _sliderValue;
+	public class CalibrateController : MonoBehaviour
+	{
+		private InputController _microfonInput;
+		private BallController[] _ballControllers;
 
-    private void Start()
-    {
-        _microfonInput   = GetComponent<InputController>();
-        _ballControllers = FindObjectsOfType<BallController>();
+#pragma warning disable 649
+		[SerializeField] private Slider _slider;
+		[SerializeField] private Text _sliderValue;
+#pragma warning restore 649
 
-        var sensitivity = SaveController.LoadIntFromPrefs(Constants.Sensitivity, 500);
-        _slider.value = sensitivity;
+		private void Start()
+		{
+			_microfonInput = GetComponent<InputController>();
+			_ballControllers = FindObjectsOfType<BallController>();
 
-        _microfonInput.Play();
+			var sensitivity = SaveController.LoadIntFromPrefs(Constants.Sensitivity, 500);
+			_slider.value = sensitivity;
+	
+			_microfonInput.Play();
 
-        for (int i = 0; i < _ballControllers.Length; i++)
-        {
-            _ballControllers[i].Play();
-            _ballControllers[i].ResetCollisions();
-        }
-    }
+			for (int i = 0; i < _ballControllers.Length; i++)
+			{
+				_ballControllers[i].Play();
+				_ballControllers[i].ResetCollisions();
+			}
+		}
 
-    public void ChangeSensitivity(float value)
-    {
-        _sliderValue.text = _slider.value.ToString();
+		public void ChangeSensitivity(float value)
+		{
+			_sliderValue.text = _slider.value.ToString();
 
-        for (int i = 0; i < _ballControllers.Length; i++)
-            _ballControllers[i].ChangeSensitivity((int)_slider.value);
-    }
+			for (int i = 0; i < _ballControllers.Length; i++)
+				_ballControllers[i].ChangeSensitivity((int)_slider.value);
+		}
 
-    public void SaveSettings()
-    {
-        SaveController.SaveIntToPrefs(Constants.Sensitivity, (int)_slider.value);
-        SceneManager.LoadScene(0);
-    }
+		public void SaveSettings()
+		{
+			SaveController.SaveIntToPrefs(Constants.Sensitivity, (int)_slider.value);
+			SceneManager.LoadScene(0);
+		}
+	}
 }

@@ -1,1 +1,4 @@
-﻿public class GridView : View { }
+﻿namespace CrazySinger
+{
+	public class GridView : View { }
+}

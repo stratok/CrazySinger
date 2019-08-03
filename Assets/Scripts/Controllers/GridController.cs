@@ -1,28 +1,31 @@
 ﻿using UnityEngine;
 
-public class GridController : GameLoopController
+namespace CrazySinger
 {
-    private float _gridSpeed = 2f;
-    private Vector3 _startGridPosition;
-    private Transform _gridTransform;
+	public class GridController : GameLoopController
+	{
+		private float _gridSpeed = 2f;
+		private Vector3 _startGridPosition;
+		private Transform _gridTransform;
 
-    protected override bool IsTimeLoop => false;
-    
-    protected override void Setup()
-    {
-        _gridTransform = FindObjectOfType<GridView>().transform;
-        _startGridPosition = _gridTransform.position;
-    }
+		protected override bool IsTimeLoop => false;
 
-    public override void Replay()
-    {
-        base.Replay();
+		protected override void Setup()
+		{
+			_gridTransform = FindObjectOfType<GridView>().transform;
+			_startGridPosition = _gridTransform.position;
+		}
 
-        _gridTransform.position = _startGridPosition;
-    }
+		public override void Replay()
+		{
+			base.Replay();
 
-    protected override void GameLoop()
-    {
-        _gridTransform.position = _gridTransform.position + Vector3.left * Time.deltaTime * _gridSpeed;
-    }
+			_gridTransform.position = _startGridPosition;
+		}
+
+		protected override void GameLoop()
+		{
+			_gridTransform.position = _gridTransform.position + Vector3.left * Time.deltaTime * _gridSpeed;
+		}
+	}
 }

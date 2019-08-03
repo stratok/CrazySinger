@@ -1,1 +1,4 @@
-﻿public class SubsPanelView : View { }
+﻿namespace CrazySinger
+{
+	public class SubsPanelView : View { }
+}

@@ -2,149 +2,152 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Animator))]
-public class GameController : MonoBehaviour
+namespace CrazySinger
 {
-    private Animator _animator;
-    
-    private UIController UIController;
-    private SoundController SoundController;
+	[RequireComponent(typeof(Animator))]
+	public class GameController : MonoBehaviour
+	{
+		private Animator _animator;
 
-    private bool _isPause   = false;
-    private int  _countdownHesh = Animator.StringToHash("Countdown");
+		private UIController UIController;
+		private SoundController SoundController;
 
-    private GameLoopController[] _controllers;
+		private bool _isPause = false;
+		private int _countdownHesh = Animator.StringToHash("Countdown");
 
-    private void Awake()
-    {
-        _animator       = GetComponent<Animator>();
+		private GameLoopController[] _controllers;
 
-        UIController    = GetComponent<UIController>();
-        SoundController = GetComponent<SoundController>();
+		private void Awake()
+		{
+			_animator = GetComponent<Animator>();
 
-        _controllers = new GameLoopController[]
-        {
-            gameObject.AddComponent<ScoreController>(),
-            gameObject.AddComponent<SubsController>(),
-            gameObject.AddComponent<GridController>(),
-            gameObject.AddComponent<InputController>(),
-            FindObjectOfType<BallController>(),
-        };
-    }
+			UIController = GetComponent<UIController>();
+			SoundController = GetComponent<SoundController>();
 
-    private void Start()
-    {
-        UIController.HideGameMenu();
-        
-        StartGame();
-    }
+			_controllers = new GameLoopController[]
+			{
+			gameObject.AddComponent<ScoreController>(),
+			gameObject.AddComponent<SubsController>(),
+			gameObject.AddComponent<GridController>(),
+			gameObject.AddComponent<InputController>(),
+			FindObjectOfType<BallController>(),
+			};
+		}
 
-    private void Update()
-    {
-        if (InputController.IsMenuKeyDown)
-            PauseGame();
-    }
+		private void Start()
+		{
+			UIController.HideGameMenu();
 
-    public void StartGame()
-    {
-        Time.timeScale = 1;
-        StartCoroutine(IStartGameCoroutine());
-    }
+			StartGame();
+		}
 
-    private IEnumerator IStartGameCoroutine()
-    {
-        _animator.Play(_countdownHesh);
-        yield return null;
-        var duration = _animator.GetCurrentAnimatorStateInfo(0).length;
-        yield return new WaitForSeconds(duration);
+		private void Update()
+		{
+			if (InputController.IsMenuKeyDown)
+				PauseGame();
+		}
 
-        SoundController.Play(SoundsList.Song);
-        Play();
-    }
+		public void StartGame()
+		{
+			Time.timeScale = 1;
+			StartCoroutine(IStartGameCoroutine());
+		}
 
-    public void RestartGame()
-    {
-        Replay();
-        
-        _isPause = false;
-        UIController.HideGameMenu();
+		private IEnumerator IStartGameCoroutine()
+		{
+			_animator.Play(_countdownHesh);
+			yield return null;
+			var duration = _animator.GetCurrentAnimatorStateInfo(0).length;
+			yield return new WaitForSeconds(duration);
 
-        StartGame();
-    }
+			SoundController.Play(SoundsList.Song);
+			Play();
+		}
 
-    public void LoseGame()
-    {
-        Stop();
-        
-        UIController.ShowGameMenu(GameMenuState.Loss);
-        SoundController.Play(SoundsList.Lose);
-    }
+		public void RestartGame()
+		{
+			Replay();
 
-    public void WinGame()
-    {
-        Stop();
+			_isPause = false;
+			UIController.HideGameMenu();
 
-        SoundController.Play(SoundsList.Win);
-        Invoke("ShowMenu", 2);
-    }
+			StartGame();
+		}
 
-    private void ShowMenu()
-    {
-        UIController.ShowGameMenu(GameMenuState.Win);
-    }
+		public void LoseGame()
+		{
+			Stop();
 
-    private void PlayCountdownSound() => SoundController.Play(SoundsList.Countdown);
-    private void PlayStartSound() => SoundController.Play(SoundsList.Start);
+			UIController.ShowGameMenu(GameMenuState.Loss);
+			SoundController.Play(SoundsList.Lose);
+		}
 
-    public void Exit()
-    {
-        Time.timeScale = 1;
-        SceneManager.LoadScene(0);
-    }
+		public void WinGame()
+		{
+			Stop();
 
-    public void PauseGame()
-    {
-        if (_isPause)
-        {
-            Time.timeScale = 1;
-            UIController.HideGameMenu();
-            SoundController.Resume();
-            Resume();
-        }
-        else
-        {
-            Time.timeScale = 0;
-            UIController.ShowGameMenu(GameMenuState.Pause);
-            SoundController.Pause();
-            Pause();
-        }
+			SoundController.Play(SoundsList.Win);
+			Invoke("ShowMenu", 2);
+		}
 
-        _isPause = !_isPause;
-    }
+		private void ShowMenu()
+		{
+			UIController.ShowGameMenu(GameMenuState.Win);
+		}
 
-    private void Play()
-    {
-        for (int i = 0; i < _controllers.Length; i++)
-            _controllers[i].Play();
-    }
-    private void Stop()
-    {
-        for (int i = 0; i < _controllers.Length; i++)
-            _controllers[i].Stop();
-    }
-    private void Replay()
-    {
-        for (int i = 0; i < _controllers.Length; i++)
-            _controllers[i].Replay();
-    }
-    private void Pause()
-    {
-        for (int i = 0; i < _controllers.Length; i++)
-            _controllers[i].Pause();
-    }
-    private void Resume()
-    {
-        for (int i = 0; i < _controllers.Length; i++)
-            _controllers[i].Resume();
-    }
+		private void PlayCountdownSound() => SoundController.Play(SoundsList.Countdown);
+		private void PlayStartSound() => SoundController.Play(SoundsList.Start);
+
+		public void Exit()
+		{
+			Time.timeScale = 1;
+			SceneManager.LoadScene(0);
+		}
+
+		public void PauseGame()
+		{
+			if (_isPause)
+			{
+				Time.timeScale = 1;
+				UIController.HideGameMenu();
+				SoundController.Resume();
+				Resume();
+			}
+			else
+			{
+				Time.timeScale = 0;
+				UIController.ShowGameMenu(GameMenuState.Pause);
+				SoundController.Pause();
+				Pause();
+			}
+
+			_isPause = !_isPause;
+		}
+
+		private void Play()
+		{
+			for (int i = 0; i < _controllers.Length; i++)
+				_controllers[i].Play();
+		}
+		private void Stop()
+		{
+			for (int i = 0; i < _controllers.Length; i++)
+				_controllers[i].Stop();
+		}
+		private void Replay()
+		{
+			for (int i = 0; i < _controllers.Length; i++)
+				_controllers[i].Replay();
+		}
+		private void Pause()
+		{
+			for (int i = 0; i < _controllers.Length; i++)
+				_controllers[i].Pause();
+		}
+		private void Resume()
+		{
+			for (int i = 0; i < _controllers.Length; i++)
+				_controllers[i].Resume();
+		}
+	}
 }

@@ -1,1 +1,4 @@
-﻿public class SubsTextView : View { }
+﻿namespace CrazySinger
+{
+	public class SubsTextView : View { }
+}

@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "SongData", menuName = "CustomObjects/SongData")]
-public class SongData : ScriptableObject
+namespace CrazySinger
 {
-    public AudioClip Song;
-    public float FinalTime;
-    public SongSettings[] SongSettings;
-}
+	[CreateAssetMenu(fileName = "SongData", menuName = "CustomObjects/SongData")]
+	public class SongData : ScriptableObject
+	{
+		public AudioClip Song;
+		public float FinalTime;
+		public SongSettings[] SongSettings;
+	}
 
-[System.Serializable]
-public struct SongSettings
-{
-    public float time;
-    public string text;
+	[System.Serializable]
+	public struct SongSettings
+	{
+		public float time;
+		public string text;
+	}
 }
