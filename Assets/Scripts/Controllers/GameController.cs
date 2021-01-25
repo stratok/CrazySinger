@@ -1,43 +1,34 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace CrazySinger
 {
-	[RequireComponent(typeof(Animator))]
 	public class GameController : MonoBehaviour
 	{
-		private Animator _animator;
-
-		private UIController UIController;
-		private SoundController SoundController;
-
-		private bool _isPause = false;
-		private int _countdownHesh = Animator.StringToHash("Countdown");
-
-		private GameLoopController[] _controllers;
+		[SerializeField] private BallController m_BallController;
+		[SerializeField] private CountdownController m_CountdownController;
+		[SerializeField] private UIController m_UIController;
+		[SerializeField] private SongData m_SongData;
+		
+		private bool m_IsPause;
+		private GameLoopController[] m_Controllers;
 
 		private void Awake()
 		{
-			_animator = GetComponent<Animator>();
-
-			UIController = GetComponent<UIController>();
-			SoundController = GetComponent<SoundController>();
-
-			_controllers = new GameLoopController[]
+			m_Controllers = new GameLoopController[]
 			{
-			gameObject.AddComponent<ScoreController>(),
-			gameObject.AddComponent<SubsController>(),
-			gameObject.AddComponent<GridController>(),
-			gameObject.AddComponent<InputController>(),
-			FindObjectOfType<BallController>(),
+				GetComponent<ScoreController>(),
+				GetComponent<SubsController>(),
+				GetComponent<GridController>(),
+				GetComponent<InputController>(),
+				m_BallController,
 			};
 		}
 
 		private void Start()
 		{
-			UIController.HideGameMenu();
-
+			Setup();
+			m_UIController.HideGameMenu();
 			StartGame();
 		}
 
@@ -50,26 +41,20 @@ namespace CrazySinger
 		public void StartGame()
 		{
 			Time.timeScale = 1;
-			StartCoroutine(IStartGameCoroutine());
-		}
-
-		private IEnumerator IStartGameCoroutine()
-		{
-			_animator.Play(_countdownHesh);
-			yield return null;
-			var duration = _animator.GetCurrentAnimatorStateInfo(0).length;
-			yield return new WaitForSeconds(duration);
-
-			SoundController.Play(SoundsList.Song);
-			Play();
+			m_CountdownController.StartCountdown(() =>
+			{
+				SoundController.I.Play(GameSound.Song, SoundChannel.Main);
+				Play();
+			}, m_SongData);
 		}
 
 		public void RestartGame()
 		{
+			SoundController.I.Stop();
 			Replay();
 
-			_isPause = false;
-			UIController.HideGameMenu();
+			m_IsPause = false;
+			m_UIController.HideGameMenu();
 
 			StartGame();
 		}
@@ -78,76 +63,87 @@ namespace CrazySinger
 		{
 			Stop();
 
-			UIController.ShowGameMenu(GameMenuState.Loss);
-			SoundController.Play(SoundsList.Lose);
+			SoundController.I.Stop();
+			SoundController.I.Play(GameSound.Lose, SoundChannel.UI);
+			m_UIController.ShowGameMenu(GameMenuState.Loss);
 		}
 
 		public void WinGame()
 		{
 			Stop();
-
-			SoundController.Play(SoundsList.Win);
-			Invoke("ShowMenu", 2);
+			SoundController.I.Stop();
+			SoundController.I.Play(GameSound.Win, SoundChannel.UI);
+			Invoke(nameof(ShowMenu), 2);
 		}
 
 		private void ShowMenu()
 		{
-			UIController.ShowGameMenu(GameMenuState.Win);
+			m_UIController.ShowGameMenu(GameMenuState.Win);
 		}
-
-		private void PlayCountdownSound() => SoundController.Play(SoundsList.Countdown);
-		private void PlayStartSound() => SoundController.Play(SoundsList.Start);
 
 		public void Exit()
 		{
 			Time.timeScale = 1;
+			SoundController.I.Stop();
 			SceneManager.LoadScene(0);
 		}
 
 		public void PauseGame()
 		{
-			if (_isPause)
+			if (m_IsPause)
 			{
 				Time.timeScale = 1;
-				UIController.HideGameMenu();
-				SoundController.Resume();
+				m_UIController.HideGameMenu();
+				SoundController.I.Resume();
 				Resume();
 			}
 			else
 			{
 				Time.timeScale = 0;
-				UIController.ShowGameMenu(GameMenuState.Pause);
-				SoundController.Pause();
+				m_UIController.ShowGameMenu(GameMenuState.Pause);
+				SoundController.I.Pause();
 				Pause();
 			}
 
-			_isPause = !_isPause;
+			m_IsPause = !m_IsPause;
+		}
+
+		private void Setup()
+		{
+			SoundController.I.Setup(m_SongData.Song);
+			
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Setup(this, m_SongData);
 		}
 
 		private void Play()
 		{
-			for (int i = 0; i < _controllers.Length; i++)
-				_controllers[i].Play();
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Play();
 		}
+		
 		private void Stop()
 		{
-			for (int i = 0; i < _controllers.Length; i++)
-				_controllers[i].Stop();
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Stop();
 		}
+		
 		private void Replay()
 		{
-			for (int i = 0; i < _controllers.Length; i++)
-				_controllers[i].Replay();
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Replay();
 		}
+		
 		private void Pause()
 		{
-			for (int i = 0; i < _controllers.Length; i++)
-				_controllers[i].Pause();
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Pause();
 		}
+		
 		private void Resume()
 		{
-			for (int i = 0; i < _controllers.Length; i++)
-				_controllers[i].Resume();
+			for (int i = 0; i < m_Controllers.Length; i++)
+				m_Controllers[i].Resume();
 		}
 	}
 }

@@ -5,33 +5,34 @@ namespace CrazySinger
 {
 	public abstract class GameLoopController : MonoBehaviour
 	{
-		private bool isSetup;
-		private Coroutine _gameLoop;
-
 		protected abstract bool IsTimeLoop { get; }
 		protected int Delay = 1;
+		protected SongData SongData;
+		protected GameController GameController;
+
+		private Coroutine m_GameLoop;
 
 		protected abstract void GameLoop();
-		protected abstract void Setup();
+
+		public virtual void Setup(GameController gameController, SongData songData)
+		{
+			GameController = gameController;
+			SongData = songData;
+		}
 
 		public virtual void Replay()
 		{
-			if (_gameLoop != null)
-				StopCoroutine(_gameLoop);
+			if (m_GameLoop != null)
+				StopCoroutine(m_GameLoop);
 		}
 		public virtual void Play()
 		{
-			if (!isSetup)
-			{
-				Setup();
-				isSetup = true;
-			}
-			_gameLoop = StartCoroutine(ILoop());
+			m_GameLoop = StartCoroutine(ILoop());
 		}
 		public virtual void Stop()
 		{
-			if (_gameLoop != null)
-				StopCoroutine(_gameLoop);
+			if (m_GameLoop != null)
+				StopCoroutine(m_GameLoop);
 		}
 		public virtual void Pause() { }
 		public virtual void Resume() { }

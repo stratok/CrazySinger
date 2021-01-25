@@ -1,31 +1,46 @@
-﻿using UnityEngine;
+﻿using System;
+using DG.Tweening;
+using UnityEngine;
 
 namespace CrazySinger
 {
 	public class GridController : GameLoopController
 	{
-		private float _gridSpeed = 2f;
-		private Vector3 _startGridPosition;
-		private Transform _gridTransform;
-
+		private Vector3 m_StartGridPosition;
+		private Transform m_GridTransform;
+		private Tween m_MovingTween;
+		
 		protected override bool IsTimeLoop => false;
 
-		protected override void Setup()
+		private void Awake()
 		{
-			_gridTransform = FindObjectOfType<GridView>().transform;
-			_startGridPosition = _gridTransform.position;
+			m_GridTransform = FindObjectOfType<GridView>().transform;
+			m_StartGridPosition = m_GridTransform.position;
 		}
 
 		public override void Replay()
 		{
 			base.Replay();
-
-			_gridTransform.position = _startGridPosition;
+			m_MovingTween?.Kill();
+			m_GridTransform.position = m_StartGridPosition;
 		}
 
-		protected override void GameLoop()
+		public override void Play()
 		{
-			_gridTransform.position = _gridTransform.position + Vector3.left * Time.deltaTime * _gridSpeed;
+			base.Play();
+			var speed = SongData.FourBeatTime;
+			
+			m_MovingTween = SongData.UseBaseSpeed ? 
+							m_GridTransform.DOMoveX(-SongData.BaseDistance, 1).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental) : 
+							m_GridTransform.DOMoveX(-SongData.Distance, speed).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
 		}
+
+		public override void Stop()
+		{
+			base.Stop();
+			m_MovingTween?.Kill();
+		}
+
+		protected override void GameLoop() { }
 	}
 }

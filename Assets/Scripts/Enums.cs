@@ -14,13 +14,14 @@
 		Top
 	}
 
-	public enum SoundsList
+	public enum GameSound
 	{
 		Countdown,
 		Start,
 		Lose,
 		Win,
 		Song,
-		Finish
+		Finish,
+		Click
 	}
 }

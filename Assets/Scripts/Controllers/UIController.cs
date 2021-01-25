@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using JetBrains.Annotations;
+using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,19 +11,30 @@ namespace CrazySinger
 {
 	public class UIController : MonoBehaviour
 	{
-
 #pragma warning disable 649
-		[SerializeField] private GameObject _gameMenu;
-		[SerializeField] private GameObject _gameMenuPauseButton;
-		[SerializeField] private Text _scoreIndicator;
-		[SerializeField] private Text _infoText;
+		[SerializeField] private GameObject m_GameMenu;
+		[SerializeField] private GameObject m_PauseButton;
+		[SerializeField] private TextMeshProUGUI m_ScoreIndicator;
+		[SerializeField] private TextMeshProUGUI m_InfoText;
+		[SerializeField] private ScoreController m_ScoreController;
 #pragma warning restore 649
 
-		private int _currentScore = 0;
+		private int m_CurrentScore;
 
+		private void Awake()
+		{
+			m_ScoreController.OnScoreChanged += UpdateScore;
+		}
+
+		private void OnDestroy()
+		{
+			m_ScoreController.OnScoreChanged -= UpdateScore;
+		}
+
+		[UsedImplicitly]
 		public void LoadMainMenu() => SceneManager.LoadScene(0);
 		public void LoadCalibrate() => SceneManager.LoadScene(1);
-		public void HideGameMenu() => _gameMenu?.SetActive(false);
+		public void HideGameMenu() => m_GameMenu.SetActive(false);
 
 		public void LoadLevel(int sceneID)
 		{
@@ -44,28 +57,28 @@ namespace CrazySinger
 			switch (state)
 			{
 				case GameMenuState.Win:
-					_gameMenuPauseButton?.SetActive(false);
-					_infoText.text = Constants.WinText;
+					m_PauseButton.SetActive(false);
+					m_InfoText.text = Constants.WinText;
 					break;
 				case GameMenuState.Loss:
-					_gameMenuPauseButton?.SetActive(false);
-					_infoText.text = Constants.LossText + _currentScore.ToString();
+					m_PauseButton.SetActive(false);
+					m_InfoText.text = Constants.LossText + m_CurrentScore.ToString();
 					break;
 				case GameMenuState.Pause:
-					_gameMenuPauseButton?.SetActive(true);
-					_infoText.text = Constants.PauseText;
+					m_PauseButton.SetActive(true);
+					m_InfoText.text = Constants.PauseText;
 					break;
 				default:
-					break;
+					throw new NotImplementedException();
 			}
 
-			_gameMenu?.SetActive(true);
+			m_GameMenu.SetActive(true);
 		}
 
 		public void UpdateScore(int score)
 		{
-			_currentScore = score;
-			_scoreIndicator.text = $"Очков: {_currentScore.ToString()}";
+			m_CurrentScore = score;
+			m_ScoreIndicator.text = $"Очков: {m_CurrentScore.ToString()}";
 		}
 	}
 }

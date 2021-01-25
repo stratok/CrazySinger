@@ -4,44 +4,45 @@ namespace CrazySinger
 {
 	public class InputController : GameLoopController
 	{
-		private string _device;
-		private int _sampleWindow = 128;
-		private AudioClip _clipRecord;
+		private const int SampleWindow = 128;
+		
+		private string m_Device;
+		private AudioClip m_ClipRecord;
 
 		public static float MicValue { get; private set; }
 		public static bool IsMenuKeyDown => Input.GetKeyDown(KeyCode.Escape);
 
 		protected override bool IsTimeLoop => false;
 
-		protected override void Setup()
+		private void Awake()
 		{
-			if (_device == null)
-				_device = Microphone.devices[0];
+			if (m_Device == null)
+				m_Device = Microphone.devices[0];
 		}
 
 		public override void Play()
 		{
-			_clipRecord = Microphone.Start(_device, true, 300, 44100);
+			m_ClipRecord = Microphone.Start(m_Device, true, 300, 44100);
 
 			base.Play();
 		}
 
 		public override void Stop()
 		{
-			Microphone.End(_device);
+			Microphone.End(m_Device);
 			base.Stop();
 		}
 
 		private float LevelMax()
 		{
 			float levelMax = 0;
-			float[] waveData = new float[_sampleWindow];
-			int micPosition = Microphone.GetPosition(null) - (_sampleWindow + 1);
+			float[] waveData = new float[SampleWindow];
+			int micPosition = Microphone.GetPosition(null) - (SampleWindow + 1);
 			if (micPosition < 0) return 0;
 
-			_clipRecord.GetData(waveData, micPosition);
+			m_ClipRecord.GetData(waveData, micPosition);
 
-			for (int i = 0; i < _sampleWindow; i++)
+			for (int i = 0; i < SampleWindow; i++)
 			{
 				float wavePeak = waveData[i] * waveData[i];
 				if (levelMax < wavePeak)
@@ -59,7 +60,7 @@ namespace CrazySinger
 			MicValue = LevelMax();
 		}
 
-		public override void Pause() => Microphone.End(_device);
-		public override void Resume() => _clipRecord = Microphone.Start(_device, true, 300, 44100);
+		public override void Pause() => Microphone.End(m_Device);
+		public override void Resume() => m_ClipRecord = Microphone.Start(m_Device, true, 300, 44100);
 	}
 }

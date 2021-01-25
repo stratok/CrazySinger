@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WinterAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 2
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 3ad0c9ed627d9f44cb802be976d09959, type: 3}
+    - {fileID: 102900000, guid: 735d98c2cdff59c4ea41960acd0d5e89, type: 3}
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: bcaa3760732b3e348b6c325ce9255838, type: 3}
+  - {fileID: 21300000, guid: d720620165221464094a780b241e4c92, type: 3}
+  - {fileID: 21300000, guid: f674290151ab11e41b1f293ac5a22853, type: 3}
+  - {fileID: 21300000, guid: f0f156112fc70774dbecd342eaac2811, type: 3}
+  - {fileID: 21300000, guid: 3bed3d313dcb1aa42972443bb21017a9, type: 3}
+  - {fileID: 21300000, guid: 7d591bd1e58e0234d9f51422be575bb9, type: 3}
+  - {fileID: 21300000, guid: 5dec3b42a84502d4d82993873f84d953, type: 3}
+  - {fileID: 21300000, guid: 78cb53a2b128ebb4f925355b2cf93995, type: 3}
+  - {fileID: 21300000, guid: f334a783a0cc01f49918d1e95c86601b, type: 3}
+  - {fileID: 21300000, guid: 825541b3c68bd1a48a9bc832523c0da9, type: 3}
+  - {fileID: 21300000, guid: baf752f321b7c2f4ab368dc2c827aa3c, type: 3}
+  - {fileID: 21300000, guid: 6b04dd752f258264fa7fe493d3b2a56e, type: 3}
+  - {fileID: 21300000, guid: 6f3b1937a208c6049b556f8e05ab379b, type: 3}
+  - {fileID: 21300000, guid: 41abd86726ee4b74694e61f1ae24ab29, type: 3}
+  - {fileID: 21300000, guid: bf4a8cf70fdd21743bfd34defa515640, type: 3}
+  - {fileID: 21300000, guid: 163499f804d2ea047b1d99a317eaf020, type: 3}
+  - {fileID: 21300000, guid: ced7ea696ea1292438edac7a25be58a3, type: 3}
+  - {fileID: 21300000, guid: ab6fe03aeabc31d459b62e9a8ba590f5, type: 3}
+  - {fileID: 21300000, guid: 02d4df7a66a7eaf45bce990da63fb792, type: 3}
+  - {fileID: 21300000, guid: 8a2f84fb0db56834eb5ff7902f46713e, type: 3}
+  - {fileID: 21300000, guid: 4f6bfc1cea3bd884ea98f7736f058786, type: 3}
+  - {fileID: 21300000, guid: df60ba2df4a88f443bdaab31877ec6cd, type: 3}
+  - {fileID: 21300000, guid: 553d753d94a9a2c47b51a552b37dd7ec, type: 3}
+  - {fileID: 21300000, guid: 673dc5dd9d28ad949a72745c492320c3, type: 3}
+  - {fileID: 21300000, guid: c21f3f3eb36523a449d52a2bc85e81df, type: 3}
+  - {fileID: 21300000, guid: ef16af3e45899df419649aed2dd00e50, type: 3}
+  - {fileID: 21300000, guid: bf019d9fcdfc5d34a9dcf4eaafc89093, type: 3}
+  - {fileID: 21300000, guid: ce3a14df4192d7547a5a5075c329279b, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - IceBox
+  - Tree_1
+  - Igloo
+  - Tree_2
+  - 14
+  - 18
+  - Sign_1
+  - 11
+  - 13
+  - Crystal
+  - 6
+  - 9
+  - 7
+  - 8
+  - 1
+  - 4
+  - 17
+  - Crate
+  - 2
+  - Sign_2
+  - 5
+  - Stone
+  - 15
+  - 12
+  - SnowMan
+  - 16
+  - 10
+  - 3
+  m_Tag: WinterAtlas
+  m_IsVariant: 0

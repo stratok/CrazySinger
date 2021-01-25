@@ -8,14 +8,13 @@ namespace CrazySinger
 {
 	public class MainSceneController : MonoBehaviour
 	{
-
 #pragma warning disable 649
-		[SerializeField] private GameObject _buttonStart;
-		[SerializeField] private GameObject _buttonCalibrate;
-		[SerializeField] private GameObject _errorText;
+		[SerializeField] private GameObject[] m_SongButtons;
+		[SerializeField] private GameObject m_ButtonCalibrate;
+		[SerializeField] private GameObject m_ErrorText;
 #pragma warning restore 649
 
-		public void Start() => CheckMicrophon();
+		public void Start() => CheckMicrophone();
 
 		public void LoadCalibrate() => SceneManager.LoadScene(1);
 
@@ -35,14 +34,16 @@ namespace CrazySinger
 #endif
 		}
 
-		private void CheckMicrophon()
+		private void CheckMicrophone()
 		{
-			if (Microphone.devices.Length == 0)
-			{
-				_buttonStart?.SetActive(false);
-				_buttonCalibrate?.SetActive(false);
-				_errorText?.SetActive(true);
-			}
+			if (Microphone.devices.Length > 0)
+				return;
+			
+			foreach (var button in m_SongButtons)
+				button.SetActive(false);
+			
+			m_ButtonCalibrate.SetActive(false);
+			m_ErrorText.SetActive(true);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using DG.Tweening;
 using System;
-using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,79 +8,65 @@ namespace CrazySinger
 {
 	public class SubsController : GameLoopController
 	{
-		private SongData _songData;
-		private RectTransform _subsPanel;
-		private Text _subsText;
-		private RectTransform _finishView;
+		private RectTransform m_SubsPanel;
+		private TextMeshProUGUI m_SubsText;
 
-		private SoundController _soundCtr;
-
-		private float _panelShift = -120f;
-		private float _shiftDuration = 0.2f;
-		private float _startTime;
-		private float _currentTime;
-		private int _stepCount;
-		private int _currentStep;
+		private const float PanelShift = -120f;
+		private const float ShiftDuration = 0.2f;
+		
+		private float m_StartTime;
+		private float m_CurrentTime;
+		private int m_StepCount;
+		private int m_CurrentStep;
 
 		protected override bool IsTimeLoop => false;
 
-		protected override void Setup()
+		private void Awake()
 		{
-			_songData = FindObjectOfType<SongDataContainer>().SongData;
-			_subsPanel = FindObjectOfType<SubsPanelView>().GetComponent<RectTransform>();
-			_subsText = FindObjectOfType<SubsTextView>().GetComponent<Text>();
-			_soundCtr = FindObjectOfType<SoundController>();
-			_finishView = FindObjectOfType<FinalView>().GetComponent<RectTransform>();
+			m_SubsPanel = FindObjectOfType<SubsPanelView>().GetComponent<RectTransform>();
+			m_SubsText = FindObjectOfType<SubsTextView>().GetComponent<TextMeshProUGUI>();
+			m_SubsText.text = string.Empty;
+		}
 
-			_stepCount = _songData.SongSettings.Length;
-			_subsText.text = string.Empty;
+		public override void Setup(GameController gameController, SongData songData)
+		{
+			base.Setup(gameController, songData);
+			m_StepCount = SongData.SongSettings.Length;
 		}
 
 		public override void Play()
 		{
+			m_CurrentStep = 0;
+			m_StartTime = Time.time;
+			m_SubsPanel.DOAnchorPosY(PanelShift, 0);
 			base.Play();
-
-			_currentStep = 0;
-			_startTime = Time.time;
 		}
 
 		public override void Replay()
 		{
-			_currentStep = 0;
-			_subsPanel.DOAnchorPosY(_panelShift, 0);
+			m_CurrentStep = 0;
+			m_StartTime = Time.time;
+			m_SubsPanel.DOAnchorPosY(PanelShift, 0);
 			base.Replay();
 		}
 
 		protected override void GameLoop()
 		{
-			_currentTime = (float)Math.Round(Time.time - _startTime, 1);
+			m_CurrentTime = (float)Math.Round(Time.time - m_StartTime, 1);
 
-			if (_currentStep < _stepCount && _currentTime == _songData.SongSettings[_currentStep].time)
+			if (m_CurrentStep < m_StepCount && m_CurrentTime >= SongData.SongSettings[m_CurrentStep].time)
 			{
-				_currentStep++;
-				ShowNextString();
-			}
-			else if (_currentTime == _songData.FinalTime)
-			{
-				StartCoroutine(ShowFinish());
+				ShowNextString(m_CurrentStep);
+				m_CurrentStep++;
 			}
 		}
 
-		private IEnumerator ShowFinish()
+		private void ShowNextString(int stepNumber)
 		{
-			_subsPanel.DOAnchorPosY(_panelShift, _shiftDuration);
-			_soundCtr.Play(SoundsList.Finish);
-			_finishView.DOAnchorPosX(0, 0.3f);
-			yield return new WaitForSeconds(2);
-			_finishView.DOAnchorPosX(400, 0.3f);
-		}
-
-		private void ShowNextString()
-		{
-			_subsPanel.DOAnchorPosY(_panelShift, _shiftDuration).OnComplete(() =>
+			m_SubsPanel.DOAnchorPosY(PanelShift, ShiftDuration).OnComplete(() =>
 			{
-				_subsText.text = _songData.SongSettings[_currentStep - 1].text;
-				_subsPanel.DOAnchorPosY(0, _shiftDuration);
+				m_SubsText.text = SongData.SongSettings[stepNumber].text;
+				m_SubsPanel.DOAnchorPosY(0, ShiftDuration);
 			});
 		}
 	}

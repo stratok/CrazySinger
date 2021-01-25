@@ -1,55 +1,70 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CrazySinger
 {
 	public class BallController : GameLoopController
 	{
-		private float _rotateSpeed = 100;
-		private int _ballSens;
-		private Rigidbody2D _ballRigidbody;
-		private GameController _gameController;
+		private bool m_IsGameRunning;
+		private int m_BallSens;
+		private Rigidbody2D m_BallRigidbody;
 
-		private BallCollisionType _ballCollisionType = BallCollisionType.Bottom;
+		private BallCollisionType m_BallCollisionType = BallCollisionType.Bottom;
 
 		protected override bool IsTimeLoop => false;
 
+		private void Awake()
+		{
+			m_BallRigidbody = GetComponent<Rigidbody2D>();
+			m_BallSens = SaveController.LoadIntFromPrefs(Constants.Sensitivity, Constants.DefaultSensitivity);
+		}
+
 		public void OnCollisionEnter2D(Collision2D collision)
 		{
-			if (collision.gameObject.tag == Constants.TagObstacles)
+			if (!m_IsGameRunning)
+				return;
+			
+			if (collision.gameObject.CompareTag(Constants.TagObstacles))
 				Lose();
-			else if (collision.gameObject.tag == Constants.TagFinish)
+			else if (collision.gameObject.CompareTag(Constants.TagFinish))
 				Win();
-			else if (collision.gameObject.tag == Constants.TagGroundTop)
-				_ballCollisionType = BallCollisionType.Top;
-			else if (collision.gameObject.tag == Constants.TagGroundBottom)
-				_ballCollisionType = BallCollisionType.Bottom;
+			else if (collision.gameObject.CompareTag(Constants.TagGroundTop))
+				m_BallCollisionType = BallCollisionType.Top;
+			else if (collision.gameObject.CompareTag(Constants.TagGroundBottom))
+				m_BallCollisionType = BallCollisionType.Bottom;
 		}
-		public void OnCollisionExit2D(Collision2D collision) => _ballCollisionType = BallCollisionType.None;
+		
+		public void OnCollisionExit2D(Collision2D collision) => m_BallCollisionType = BallCollisionType.None;
 
-		private void Lose() => _gameController.LoseGame();
+		private void Lose()
+		{
+			m_IsGameRunning = false;
+			GameController.LoseGame();
+		}
 
-		private void Win() => _gameController.WinGame();
+		private void Win()
+		{
+			m_IsGameRunning = false;
+			GameController.WinGame();
+		}
 
 		private void Rotate()
 		{
-			if (_ballCollisionType == BallCollisionType.Bottom)
-				transform.Rotate(Vector3.forward, -_rotateSpeed * Time.deltaTime);
-			else if (_ballCollisionType == BallCollisionType.Top)
-				transform.Rotate(Vector3.forward, _rotateSpeed * Time.deltaTime);
+			if (m_BallCollisionType == BallCollisionType.Bottom)
+				transform.Rotate(Vector3.forward, -SongData.BallSpeed * Time.deltaTime);
+			else if (m_BallCollisionType == BallCollisionType.Top)
+				transform.Rotate(Vector3.forward, SongData.BallSpeed * Time.deltaTime);
 		}
+		
 		private void Move()
 		{
-			_ballRigidbody.AddForce(Vector3.up * InputController.MicValue * _ballSens);
+			m_BallRigidbody.AddForce(Vector3.up * InputController.MicValue * m_BallSens);
 		}
-		public void ChangeSensitivity(int value) => _ballSens = value;
-		public void ResetCollisions() => _ballCollisionType = BallCollisionType.None;
+		
+		public void ChangeSensitivity(int value) => m_BallSens = value;
+		
+		public void ResetCollisions() => m_BallCollisionType = BallCollisionType.None;
 
-		protected override void Setup()
-		{
-			_gameController = FindObjectOfType<GameController>();
-			_ballRigidbody = GetComponent<Rigidbody2D>();
-			_ballSens = SaveController.LoadIntFromPrefs(Constants.Sensitivity, 500);
-		}
 		protected override void GameLoop()
 		{
 			Move();
@@ -59,8 +74,8 @@ namespace CrazySinger
 		public override void Play()
 		{
 			base.Play();
-
-			_ballCollisionType = BallCollisionType.Bottom;
+			m_IsGameRunning = true;
+			m_BallCollisionType = BallCollisionType.Bottom;
 		}
 	}
 }

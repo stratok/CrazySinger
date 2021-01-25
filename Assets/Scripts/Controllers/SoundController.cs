@@ -1,57 +1,78 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace CrazySinger
 {
 	[RequireComponent(typeof(AudioSource))]
-	[RequireComponent(typeof(SongDataContainer))]
 	public class SoundController : MonoBehaviour
 	{
 #pragma warning disable 649
-		[SerializeField] private AudioClip _countdown;
-		[SerializeField] private AudioClip _start;
-		[SerializeField] private AudioClip _lose;
-		[SerializeField] private AudioClip _win;
-		[SerializeField] private AudioClip _final;
+		[SerializeField] private AudioSource m_AudioSourceMain;
+		[SerializeField] private AudioSource m_AudioSourceUI;
+		[SerializeField] private AudioClip m_Countdown;
+		[SerializeField] private AudioClip m_Start;
+		[SerializeField] private AudioClip m_Lose;
+		[SerializeField] private AudioClip m_Win;
+		[SerializeField] private AudioClip m_Finish;
+		[SerializeField] private AudioClip m_Click;
 #pragma warning restore 649
 
-		private AudioClip _song;
-		private AudioSource _audioSource;
+		private Dictionary<GameSound, AudioClip> m_SongsDictionary;
+
+		public static SoundController I { get; private set; }
 
 		private void Awake()
 		{
-			_song = GetComponent<SongDataContainer>().SongData.Song;
-			_audioSource = GetComponent<AudioSource>();
+			if (I == null) 
+			{
+				I = this;
+			} 
+			else if(I == this)
+			{
+				Destroy(gameObject);
+			}
+			
+			DontDestroyOnLoad(gameObject);
+			
+			m_SongsDictionary = new Dictionary<GameSound, AudioClip>()
+			{
+				{GameSound.Countdown, m_Countdown},
+				{GameSound.Lose, m_Lose},
+				{GameSound.Start, m_Start},
+				{GameSound.Win, m_Win},
+				{GameSound.Finish, m_Finish},
+				{GameSound.Click, m_Click},
+				{GameSound.Song, null}
+			};
 		}
 
-		public void Stop() => _audioSource.Stop();
-		public void Pause() => _audioSource.Pause();
-		public void Resume() => _audioSource.Play();
+		public void Stop() => m_AudioSourceMain.Stop();
+		public void Pause() => m_AudioSourceMain.Pause();
+		public void Resume() => m_AudioSourceMain.Play();
+		public void Setup(AudioClip song) => m_SongsDictionary[GameSound.Song] = song;
 
-		public void Play(SoundsList sound)
+		public void Play(GameSound sound, SoundChannel channel)
 		{
-			switch (sound)
+			var clip = m_SongsDictionary[sound];
+			
+			switch (channel)
 			{
-				case SoundsList.Countdown:
-					_audioSource.clip = _countdown;
+				case SoundChannel.UI:
+					m_AudioSourceUI.clip = clip;
+					m_AudioSourceUI.Play();
 					break;
-				case SoundsList.Lose:
-					_audioSource.clip = _lose;
-					break;
-				case SoundsList.Win:
-					_audioSource.clip = _win;
-					break;
-				case SoundsList.Start:
-					_audioSource.clip = _start;
-					break;
-				case SoundsList.Song:
-					_audioSource.clip = _song;
-					break;
-				case SoundsList.Finish:
-					_audioSource.clip = _final;
+				case SoundChannel.Main:
+					m_AudioSourceMain.clip = clip;
+					m_AudioSourceMain.Play();
 					break;
 			}
-
-			_audioSource.Play();
 		}
+	}
+
+	public enum SoundChannel
+	{
+		UI,
+		Main
 	}
 }

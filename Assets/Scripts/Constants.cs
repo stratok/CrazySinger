@@ -10,4 +10,6 @@
     public const string WinText     = "Безоговорочная победа!";
     public const string LossText    = "Вы проиграли, ваш счет: ";
     public const string PauseText   = "Пауза";
+
+    public const int DefaultSensitivity = 500;
 }

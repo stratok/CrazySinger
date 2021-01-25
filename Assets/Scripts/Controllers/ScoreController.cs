@@ -1,16 +1,18 @@
-﻿namespace CrazySinger
+﻿using System;
+using UnityEngine;
+
+namespace CrazySinger
 {
 	public class ScoreController : GameLoopController
 	{
-		private UIController _uIController;
-
 		public int Score { get; private set; }
+
+		public Action<int> OnScoreChanged;
 
 		protected override bool IsTimeLoop => true;
 
-		protected override void Setup()
+		private void Awake()
 		{
-			_uIController = FindObjectOfType<UIController>();
 			Score = 0;
 			Delay = 1;
 		}
@@ -18,14 +20,14 @@
 		protected override void GameLoop()
 		{
 			Score += 10;
-			_uIController?.UpdateScore(Score);
+			OnScoreChanged?.Invoke(Score);
 		}
 
 		public override void Replay()
 		{
 			base.Replay();
 			Score = 0;
-			_uIController?.UpdateScore(Score);
+			OnScoreChanged?.Invoke(Score);
 		}
 	}
 }
